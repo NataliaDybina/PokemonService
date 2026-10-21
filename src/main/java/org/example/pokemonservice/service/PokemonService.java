@@ -1,10 +1,8 @@
 package org.example.pokemonservice.service;
 
-import org.example.pokemonservice.api.AllPokemonResponse;
+import org.example.pokemonservice.api.*;
 import org.example.pokemonservice.dto.ComparisonDTO;
 import org.example.pokemonservice.exception.PokemonNotFoundException;
-import org.example.pokemonservice.api.Pokemon;
-import org.example.pokemonservice.api.PokemonResponse;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -23,7 +21,7 @@ public class PokemonService {
         this.restClient = restClientBuilder.baseUrl("https://pokeapi.co/api/v2/").build();
     }
 
-    public List<Pokemon> getAllPokemon() {
+    public List<AllPokemonEntity> getAllPokemon() {
         return Objects.requireNonNull(restClient.get().uri("/pokemon").retrieve().body(AllPokemonResponse.class)).results();
     }
 
@@ -46,7 +44,7 @@ public class PokemonService {
         PokemonResponse pokemonResponse = null;
         while (pokemonResponse == null) {
             int randomNumber = ThreadLocalRandom.current().nextInt(1, allPokemonResponse.count() + 1);
-            String name = allPokemonResponse.results().get(randomNumber).name();
+            String name = allPokemonResponse.results().get(randomNumber - 1).name();
             try {
                 pokemonResponse = getPokemonByName(name);
             } catch (HttpStatusCodeException e) {
@@ -86,5 +84,17 @@ public class PokemonService {
             higherPokemon = "They're equal";
         }
         return new ComparisonDTO(havierPokemon, weightDifference, higherPokemon, heightDifference);
+    }
+
+    public List<AllPokemonEntity> getPokemonByType(String type) {
+        return Objects.requireNonNull(restClient.get().uri("/type/{type}", type).retrieve()
+                        .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
+                            throw new IllegalArgumentException("Type " + type + " not Found");
+                        }))
+                        .body(TypeResponse.class))
+                .pokemon()
+                .stream()
+                .map(TypePokemonListResponse::pokemon)
+                .toList();
     }
 }

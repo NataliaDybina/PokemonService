@@ -1,6 +1,6 @@
 package org.example.pokemonservice.controller;
 
-import org.example.pokemonservice.api.Pokemon;
+import org.example.pokemonservice.api.AllPokemonEntity;
 import org.example.pokemonservice.api.PokemonResponse;
 import org.example.pokemonservice.dto.ComparisonDTO;
 import org.example.pokemonservice.service.PokemonService;
@@ -19,11 +19,11 @@ public class PokemonController {
     }
 
     @GetMapping
-    public List<Pokemon> getAllPokemon() {
+    public List<AllPokemonEntity> getAllPokemon() {
         return service.getAllPokemon();
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/name/{name}")
     public PokemonResponse getPokemonByName(@PathVariable String name) {
         return service.getPokemonByName(name);
     }
@@ -36,5 +36,10 @@ public class PokemonController {
     @GetMapping("/compare/{name1}/{name2}")
     public ComparisonDTO compare2Pokemon(@PathVariable String name1, @PathVariable String name2) {
         return service.compare2Pokemon(name1, name2);
+    }
+
+    @GetMapping("/type/{type}")
+    public List<AllPokemonEntity> getPokemonByType(@PathVariable String type) {
+        return service.getPokemonByType(type);
     }
 }

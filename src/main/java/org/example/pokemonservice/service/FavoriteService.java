@@ -1,6 +1,7 @@
 package org.example.pokemonservice.service;
 
 import org.example.pokemonservice.api.PokemonResponse;
+import org.example.pokemonservice.api.Types;
 import org.example.pokemonservice.dto.FavoriteDTO;
 import org.example.pokemonservice.dto.UpdateFavoriteDTO;
 import org.example.pokemonservice.exception.CollectionEntryAlreadyExistException;
@@ -29,11 +30,8 @@ public class FavoriteService {
     }
 
     public Favorite getFavoriteById(String id) {
-        Favorite favorite = favoriteRepo.findById(id).orElse(null);
-        if (Objects.isNull(favorite)) {
-            throw new CollectionEntryNotFoundException("Favorite Pokemon with id: " + id + " not found");
-        }
-        return favorite;
+        return favoriteRepo.findById(id)
+                .orElseThrow(() -> new CollectionEntryNotFoundException("Favorite Pokemon with id: " + id + " not found"));
     }
 
     public Favorite addFavorite(FavoriteDTO favoriteDTO) {
@@ -46,7 +44,8 @@ public class FavoriteService {
                         pokemonResponse.id(),
                         pokemonResponse.base_experience(),
                         pokemonResponse.height(),
-                        pokemonResponse.weight());
+                        pokemonResponse.weight(),
+                        pokemonResponse.types().stream().map(Types::type).toList());
                 favoriteRepo.save(favorite);
                 return favorite;
             }

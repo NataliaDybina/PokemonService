@@ -201,19 +201,23 @@ classDiagram
 
 ### Environment Variables
 
-Configure the MongoDB connection string using the `MONGO_DB_URI` environment variable before running the application:
+The Mongo URI is configured via an environment variable.
+
+In `application.properties`:
+
+```properties
+spring.mongodb.uri=${MONGO_DB_URI}
+```
+
+Set the environment variable before starting the application:
 
 ```bash
-export MONGO_DB_URI="mongodb://localhost:27017/pokemons"
+export MONGO_DB_URI="mongodb+srv://<user>:<password>@<cluster>/<db_name>"
 ```
 
 ### Build & Run
 
 ```bash
-# Clone repository
-git clone https://github.com/your-username/pokemon-service.git
-cd pokemon-service
-
 # Run unit & integration tests
 ./mvnw test
 
